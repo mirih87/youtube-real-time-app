@@ -1,5 +1,5 @@
 const io = require('socket.io')()
-const port = 4000;
+const port =  process.env.PORT || 4000;
 const sockets = new Map();
 const activeYoutubes = {};
 io.on('connection', socket => {

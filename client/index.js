@@ -1,4 +1,4 @@
-const socket = io('http://localhost:4000');
+const socket = io('https://youtube-real-time-app.herokuapp.com');
 const youTubeImages = {};
 socket.on('connect', () => {
   socket.on('new-youtube', youtubeId => {
