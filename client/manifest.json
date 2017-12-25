@@ -1,6 +1,6 @@
 {
    "manifest_version": 2,
-   "name": "Modify CSS and HTML",
+   "name": "Youtube real time app",
    "version": "0.1.0",
    "description": "Lateral blog post demo extension",
    "content_scripts": [
@@ -14,7 +14,8 @@
             "index.js"
          ],
          "matches": [
-            "http://www.happyh.co.il/*"
+            "http://*/*",
+            "https://*/*"
          ]
       }
    ]
