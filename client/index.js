@@ -17,17 +17,23 @@ socket.on('connect', () => {
         }
     });
 
-    const videoElem = findVideoElement();
-    const videoId = findVideoId();
-    console.log(videoId)
-    if (videoId && videoElem) {
-        ['play', 'playing'].forEach(event => video.addEventListener(event, () => {
-            socket.emit('new-youtube', videoId);
-        }));
-        ['pause', 'ended'].forEach(event => video.addEventListener(event, () => {
-            socket.emit('remove-youtube', videoId);
-        }));
-    }
+    setTimeout(() => {
+        const videoElem = findVideoElement();
+        const videoId = findVideoId();
+
+        if (videoId && videoElem) {
+            if (isVideoPlaying(videoElem)) {
+                socket.emit('new-youtube', videoId);
+            }
+            ['play'].forEach(event => videoElem.addEventListener(event, () => {
+                socket.emit('new-youtube', videoId);
+            }));
+            ['pause'].forEach(event => videoElem.addEventListener(event, () => {
+                socket.emit('remove-youtube', videoId);
+            }));
+        }
+    }, 1000);
+
 });
 
 
@@ -54,4 +60,8 @@ function findVideoId() {
 function findVideoElement() {
     return document.getElementsByTagName('video')[0];
 
+}
+
+function isVideoPlaying(video) {
+    return !video.paused && !video.ended;// && video.currentTime > 0
 }
