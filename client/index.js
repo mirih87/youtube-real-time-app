@@ -18,6 +18,7 @@ socket.on('connect', () => {
     });
 
     setTimeout(() => {
+
         const videoElem = findVideoElement();
         const videoId = findVideoId();
 
@@ -54,7 +55,8 @@ function findVideoId() {
     if (window.location.origin != 'https://www.youtube.com') {
         return;
     }
-    return window.location.search.split('v=')[1];
+
+    return new URLSearchParams(location.search).get('v');
 }
 
 
