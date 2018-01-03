@@ -1,5 +1,6 @@
 const socket = io('https://youtube-real-time-app.herokuapp.com');
 const youTubeImages = {};
+let oldVideoId, currentVideoId;
 socket.on('connect', () => {
     socket.on('new-youtube', (youtubeId) => {
         youTubeImages[youtubeId] = youTubeImages[youtubeId] || 0;
@@ -18,21 +19,14 @@ socket.on('connect', () => {
     });
 
     setTimeout(() => {
+        oldVideoId = findVideoId();
+        setNewVideo();
 
-        const videoElem = findVideoElement();
-        const videoId = findVideoId();
-
-        if (videoId && videoElem) {
-            if (isVideoPlaying(videoElem)) {
-                socket.emit('new-youtube', videoId);
-            }
-            ['play'].forEach(event => videoElem.addEventListener(event, () => {
-                socket.emit('new-youtube', videoId);
-            }));
-            ['pause'].forEach(event => videoElem.addEventListener(event, () => {
-                socket.emit('remove-youtube', videoId);
-            }));
+        var items = document.getElementById('items');
+        if (items && window.location.origin == 'https://www.youtube.com') {
+            items.addEventListener('click', () => setTimeout(setNewVideo, 1000));
         }
+
     }, 1000);
 
 });
@@ -51,6 +45,30 @@ function renderImages() {
 }
 
 
+function setNewVideo() {
+
+    const videoElem = findVideoElement();
+    currentVideoId = findVideoId();
+    if (currentVideoId != oldVideoId) {
+        socket.emit('remove-youtube', oldVideoId);
+        oldVideoId = currentVideoId;
+    }
+
+    if (currentVideoId && videoElem) {
+        if (isVideoPlaying(videoElem)) {
+            socket.emit('new-youtube', currentVideoId);
+        }
+        // ['play'].forEach(event => videoElem.addEventListener(event, () => {
+        //     if (wasAdStopped) {
+        //         socket.emit('new-youtube', currentVideoId);
+        //     }
+        // }));
+        // ['pause'].forEach(event => videoElem.addEventListener(event, () => {
+        //     socket.emit('remove-youtube', currentVideoId);
+        // }));
+    }
+}
+
 function findVideoId() {
     if (window.location.origin != 'https://www.youtube.com') {
         return;
@@ -68,3 +86,4 @@ function findVideoElement() {
 function isVideoPlaying(video) {
     return !video.paused && !video.ended;// && video.currentTime > 0
 }
+
