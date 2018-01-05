@@ -23,27 +23,27 @@ io.on('connection', socket => {
     });
 
     socket.on('remove-youtube', id => {
-        activeYoutubes[id]--;
-        if (!activeYoutubes[id]) {
-            delete activeYoutubes[id];
-        }
-        sockets.forEach((arr, socket) => {
-            socket.emit('remove-youtube', id);
-        });
+        removeYoutube(id);
     });
 
     socket.on('disconnect', () => {
         const videos = sockets.get(socket) || [];
         videos.forEach(id => {
             if (activeYoutubes[id]) {
-                activeYoutubes[id]--;
-            }
-
-            for (let socket of sockets.keys()) {
-                socket.emit('remove-youtube', id);
+                removeYoutube(id);
             }
         })
-    })
+    });
+
+    function removeYoutube(id) {
+        activeYoutubes[id]--;
+        if (!activeYoutubes[id]) {
+            delete activeYoutubes[id];
+        }
+        for (let socket of sockets.keys()) {
+            socket.emit('remove-youtube', id);
+        }
+    }
 
 });
 

@@ -14,6 +14,9 @@
       },
       "default_title": "DV Youtube"
    },
+   "permissions": [
+      "tabs"
+   ],
    "content_scripts": [
       {
          "css": [
