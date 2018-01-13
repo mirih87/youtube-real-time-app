@@ -5,27 +5,18 @@ const activeYoutubes = {};
 io.on('connection', socket => {
     sockets.set(socket, []);
 
-    Object.keys(activeYoutubes).forEach(id => {
-        let count = activeYoutubes[id];
-        while (count > 0) {
-            socket.emit('new-youtube', id);
-            count--;
-        }
-    });
+    // Object.keys(activeYoutubes).forEach(id => {
+    //     let count = activeYoutubes[id];
+    //     while (count > 0) {
+    //         socket.emit('new-youtube', id);
+    //         count--;
+    //     }
+    // });
 
-    socket.on('new-youtube', id => {
-        activeYoutubes[id] = activeYoutubes[id] || 0;
-        activeYoutubes[id]++;
-        sockets.get(socket).push(id);
-        sockets.forEach((arr, socket) => {
-            socket.emit('new-youtube', id);
-        });
-    });
+    socket.emit('getPreviousYou-tube', activeYoutubes);
 
-    socket.on('remove-youtube', id => {
-        removeYoutube(id);
-    });
-
+    socket.on('new-youtube', addyouTube);
+    socket.on('remove-youtube', removeYoutube);
     socket.on('disconnect', () => {
         const videos = sockets.get(socket) || [];
         videos.forEach(id => {
@@ -34,6 +25,15 @@ io.on('connection', socket => {
             }
         })
     });
+
+    function addyouTube(id) {
+        activeYoutubes[id] = activeYoutubes[id] || 0;
+        activeYoutubes[id]++;
+        sockets.get(socket).push(id);
+        sockets.forEach((arr, socket) => {
+            socket.emit('new-youtube', id);
+        });
+    }
 
     function removeYoutube(id) {
         activeYoutubes[id]--;

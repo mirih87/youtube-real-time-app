@@ -1,11 +1,17 @@
 const socket = io('https://youtube-real-time-app.herokuapp.com');
-const youTubeImages = {};
+let youTubeImages = {};
 let oldVideoId, currentVideoId;
 socket.on('connect', () => {
+
+    socket.on('getPreviousYou-tube', previousImages => {
+        youTubeImages = previousImages;
+        renderImages();
+    });
+
     socket.on('new-youtube', (youtubeId) => {
         youTubeImages[youtubeId] = youTubeImages[youtubeId] || 0;
         youTubeImages[youtubeId]++;
-        renderImages();
+        renderChanges(youtubeId, youTubeImages[youtubeId]);
     });
 
     socket.on('remove-youtube', youtubeId => {
@@ -14,7 +20,7 @@ socket.on('connect', () => {
             if (!youTubeImages[youtubeId]) {
                 delete youTubeImages[youtubeId];
             }
-            renderImages();
+            renderChanges(youtubeId, youTubeImages[youtubeId]);
         }
     });
 
@@ -44,6 +50,27 @@ function renderImages() {
     document.getElementById('youtube-images').innerHTML = html;
 }
 
+function renderChanges(id, counter = 0) {
+    let item = document.getElementById(id);
+    if (!counter) { // remove img
+        item.remove();
+    }
+    else if (item && counter > 0) {   // update counter
+        item.getElementsByTagName('div')[0].innerText = counter;
+    } else { // add image
+        item = document.createElement('div');
+        item.className = 'you-item';
+        item.id = id;
+        const counterElem = document.createElement('div');
+        counterElem.className = 'counter';
+        counterElem.innerText = counter;
+        const img = document.createElement('img');
+        img.src = `https://img.youtube.com/vi/${id}/0.jpg`;
+        item.appendChild(counterElem);
+        item.appendChild(img);
+        document.getElementById('youtube-images').appendChild(item);
+    }
+}
 
 function setNewVideo() {
 
@@ -55,9 +82,9 @@ function setNewVideo() {
     }
 
     if (currentVideoId && videoElem) {
-        if (isVideoPlaying(videoElem)) {
-            socket.emit('new-youtube', currentVideoId);
-        }
+        // if (isVideoPlaying(videoElem)) {
+        socket.emit('new-youtube', currentVideoId);
+        // }
         // ['play'].forEach(event => videoElem.addEventListener(event, () => {
         //     if (wasAdStopped) {
         //         socket.emit('new-youtube', currentVideoId);
@@ -83,7 +110,7 @@ function findVideoElement() {
 
 }
 
-function isVideoPlaying(video) {
-    return !video.paused && !video.ended;// && video.currentTime > 0
-}
+// function isVideoPlaying(video) {
+//     return !video.paused && !video.ended;// && video.currentTime > 0
+// }
 
