@@ -28,7 +28,7 @@ socket.on('connect', () => {
         oldVideoId = findVideoId();
         setNewVideo();
 
-        var items = document.getElementById('items');
+        const items = document.getElementById('items');
         if (items && window.location.origin == 'https://www.youtube.com') {
             items.addEventListener('click', () => setTimeout(setNewVideo, 1000));
         }
@@ -41,7 +41,7 @@ socket.on('connect', () => {
 function renderImages() {
     const html = Object.keys(youTubeImages).reduce((acc, id) => {
         return acc + `
-            <div class="you-item">
+            <div class="you-item" id=${id}>
                 <div class="counter">${youTubeImages[id]}</div>
                 <img src="https://img.youtube.com/vi/${id}/0.jpg" />
             </div>

@@ -5,14 +5,6 @@ const activeYoutubes = {};
 io.on('connection', socket => {
     sockets.set(socket, []);
 
-    // Object.keys(activeYoutubes).forEach(id => {
-    //     let count = activeYoutubes[id];
-    //     while (count > 0) {
-    //         socket.emit('new-youtube', id);
-    //         count--;
-    //     }
-    // });
-
     socket.emit('getPreviousYou-tube', activeYoutubes);
 
     socket.on('new-youtube', addyouTube);
