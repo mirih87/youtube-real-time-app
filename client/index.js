@@ -5,7 +5,7 @@ socket.on('connect', () => {
 
     socket.on('getPreviousYou-tube', previousImages => {
         youTubeImages = previousImages;
-        renderImages();
+        renderPreviousImages();
     });
 
     socket.on('new-youtube', (youtubeId) => {
@@ -38,7 +38,7 @@ socket.on('connect', () => {
 });
 
 
-function renderImages() {
+function renderPreviousImages() {
     const html = Object.keys(youTubeImages).reduce((acc, id) => {
         return acc + `
             <div class="you-item" id=${id}>
@@ -82,17 +82,7 @@ function setNewVideo() {
     }
 
     if (currentVideoId && videoElem) {
-        // if (isVideoPlaying(videoElem)) {
         socket.emit('new-youtube', currentVideoId);
-        // }
-        // ['play'].forEach(event => videoElem.addEventListener(event, () => {
-        //     if (wasAdStopped) {
-        //         socket.emit('new-youtube', currentVideoId);
-        //     }
-        // }));
-        // ['pause'].forEach(event => videoElem.addEventListener(event, () => {
-        //     socket.emit('remove-youtube', currentVideoId);
-        // }));
     }
 }
 
@@ -104,13 +94,9 @@ function findVideoId() {
     return new URLSearchParams(location.search).get('v');
 }
 
-
 function findVideoElement() {
     return document.getElementsByTagName('video')[0];
 
 }
 
-// function isVideoPlaying(video) {
-//     return !video.paused && !video.ended;// && video.currentTime > 0
-// }
 
