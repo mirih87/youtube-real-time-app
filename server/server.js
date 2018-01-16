@@ -2,6 +2,7 @@ const io = require('socket.io')();
 const port = process.env.PORT || 4000;
 const sockets = new Map();
 const activeYoutubes = {};
+
 io.on('connection', socket => {
     sockets.set(socket, []);
 

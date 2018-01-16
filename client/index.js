@@ -1,6 +1,5 @@
 const socket = io('https://youtube-real-time-app.herokuapp.com');
-let youTubeImages = {};
-let oldVideoId, currentVideoId;
+let youTubeImages = {}, oldVideoId, currentVideoId;
 socket.on('connect', () => {
 
     socket.on('getPreviousYou-tube', previousImages => {
@@ -8,22 +7,8 @@ socket.on('connect', () => {
         renderPreviousImages();
     });
 
-    socket.on('new-youtube', (youtubeId) => {
-        youTubeImages[youtubeId] = youTubeImages[youtubeId] || 0;
-        youTubeImages[youtubeId]++;
-        renderChanges(youtubeId, youTubeImages[youtubeId]);
-    });
-
-    socket.on('remove-youtube', youtubeId => {
-        if (youTubeImages[youtubeId]) {
-            youTubeImages[youtubeId]--;
-            if (!youTubeImages[youtubeId]) {
-                delete youTubeImages[youtubeId];
-            }
-            renderChanges(youtubeId, youTubeImages[youtubeId]);
-        }
-    });
-
+    socket.on('new-youtube', addyouTube);
+    socket.on('remove-youtube', removeYoutube);
     setTimeout(() => {
         oldVideoId = findVideoId();
         setNewVideo();
@@ -34,9 +19,23 @@ socket.on('connect', () => {
         }
 
     }, 1000);
-
 });
 
+function addyouTube(youtubeId) {
+    youTubeImages[youtubeId] = youTubeImages[youtubeId] || 0;
+    youTubeImages[youtubeId]++;
+    renderChanges(youtubeId, youTubeImages[youtubeId]);
+}
+
+function removeYoutube(youtubeId) {
+    if (youTubeImages[youtubeId]) {
+        youTubeImages[youtubeId]--;
+        if (!youTubeImages[youtubeId]) {
+            delete youTubeImages[youtubeId];
+        }
+        renderChanges(youtubeId, youTubeImages[youtubeId]);
+    }
+}
 
 function renderPreviousImages() {
     const html = Object.keys(youTubeImages).reduce((acc, id) => {
